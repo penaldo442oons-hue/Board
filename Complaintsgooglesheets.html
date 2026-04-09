@@ -559,7 +559,7 @@ function renderComplaints() {
           <option value="in-progress" ${status==="in-progress" ?"selected":""}>In progress</option>
           <option value="resolved"    ${status==="resolved"    ?"selected":""}>Resolved</option>
         </select>
-        <button class="btn btn-ghost btn-sm" onclick="openNoteModal('${esc(id)}', ${JSON.stringify(adminNote)})">
+        <button class="btn btn-ghost btn-sm note-btn" data-id="${esc(id)}" data-note="${esc(adminNote)}">
           ${adminNote ? "✏️ Edit response" : "💬 Add response"}
         </button>
       </div>
@@ -588,6 +588,19 @@ async function updateStatus(id, status) {
 }
 
 // ── NOTE MODAL ────────────────────────────────────────
+// Use event delegation so dynamically rendered buttons always work
+document.addEventListener("click", function(e) {
+  const btn = e.target.closest(".note-btn");
+  if (!btn) return;
+  const id   = btn.getAttribute("data-id");
+  const note = btn.getAttribute("data-note") || "";
+  noteTargetId = id;
+  document.getElementById("modal-complaint-id").textContent = id;
+  document.getElementById("modal-note").value = note;
+  document.getElementById("note-modal").style.display = "flex";
+  document.getElementById("modal-note").focus();
+});
+
 function openNoteModal(id, existingNote) {
   noteTargetId = id;
   document.getElementById("modal-complaint-id").textContent = id;
